@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { format } = require('path');
 const { start } = require('repl');
+const fs = require('fs')
 
 const token = '5468851871:AAHTmWbryFXtMogAIqecx2znizfRBNQOztM'
 
@@ -8,13 +9,35 @@ const bot = new TelegramBot(token, { polling: true })
 
 
 console.log('READY')
-let holidays = ['2022-03-09'];
+// let holidays = ['2022-07-09'];
+function holidaysService()
+{
 let holidaysCount = 0
+let holidaysNotFormatted = JSON.parse(fs.readFileSync('holidays.json'))
+console.log(holidaysNotFormatted)
+let holidays = []
+let reasons = []
+let counter = 0
 
-    
+while (counter < holidaysNotFormatted.days.length)
+{
+	console.log('123')
+	reasons[counter] = holidaysNotFormatted.days[counter][1]
+	holidays[counter] = holidaysNotFormatted.days[counter][0]
+	counter = counter + 1
+}
+
+
+console.log(holidays)
+console.log(reasons)
+return [holidays, reasons, holidaysCount]
+
+}
 
 
 function getBusinessDatesCount(startDate, endDate) {
+    let holidays = holidaysService()[0]
+    let holidaysCount = holidaysService()[2]
     let count = 0;
     const curDate = new Date(startDate.getTime());
     while (curDate <= endDate) {
@@ -46,7 +69,20 @@ function getDatesCount(startDate, endDate)
 
 function getDatesBeforeHolidays(startDate)
 {
-	return holidays[0] < startDate
+    let holidays = holidaysService()[0]
+	let counter2 = 0
+	let looper = true
+	while (looper == true)
+	{
+		looper = new Date(holidays[counter2]) < startDate
+		counter2 = counter2 + 1
+		console.log('LOOPER' + looper)
+	}
+
+    console.log('before - ' + counter2 - 1)
+	let BHDays = getDatesCount(startDate, new Date(holidays[counter2-1]))
+	let BHBuisnessDays = getBusinessDatesCount(startDate, new Date(holidays[counter2-1]))
+	return [BHDays, BHBuisnessDays]
 }
 
 

@@ -28,8 +28,8 @@ while (counter < holidaysNotFormatted.days.length)
 }
 
 
-console.log(holidays)
-console.log(reasons)
+// console.log(holidays)
+// console.log(reasons)
 return [holidays, reasons, holidaysCount]
 
 }
@@ -54,8 +54,9 @@ function getBusinessDatesCount(startDate, endDate) {
         curDate.setDate(curDate.getDate() + 1);
         
     }
+    console.log('OTDIX' + holidaysCount)
     console.log(count - holidaysCount);
-    return count;
+    return count - holidaysCount;
 }
 
 
@@ -91,5 +92,55 @@ bot.on('message', function (msg) {
 	let startDate = new Date();
     console.log(startDate)
     let endDate = new Date('09/13/2023');
-    bot.sendMessage(chatId, getBusinessDatesCount(startDate, endDate) + ' = ' + getDatesCount(startDate, endDate) + '-=' + getDatesBeforeHolidays(startDate));
+    bot.sendMessage('925304597', getBusinessDatesCount(startDate, endDate) + ' = ' + getDatesCount(startDate, endDate) + '-=' + getDatesBeforeHolidays(startDate));
 });
+
+setInterval(function(){
+	let startDate = new Date();
+    console.log(startDate)
+    let endDate = new Date('09/13/2023');
+
+    if ((startDate.getHours() == 23) && (startDate.getDay() == 0)) // && (startDate.getMinutes() == 0)
+    {
+        console.log('E')
+        let month = startDate.getMonth()
+        let date = startDate.getDate()
+        let monthFormat = 'июля'
+        switch(month) {
+        case 0: monthFormat = " января"
+        break
+        case 1: monthFormat = " февраля"
+        break;
+        case 2: monthFormat = " марта"
+        break;
+        case 3: monthFormat = " апреля"
+        break;
+        case 4: monthFormat = " мая"
+        break;
+        case 5: monthFormat = " июня"
+        break;
+        case 6: monthFormat = " июля"
+        break;
+        case 7: monthFormat = " августа"
+        break;
+        case 8: monthFormat = " сентября"
+        break;
+        case 9: monthFormat = " октября"
+        break;
+        case 10: monthFormat = " ноября"
+        break;
+        case 11: monthFormat = " декабря"
+        break;
+        
+    }
+
+    let normalDays =  getDatesCount(startDate, endDate) 
+    let buisnessdays = getBusinessDatesCount(startDate, endDate)
+    let daysToHolidays =  getDatesBeforeHolidays(startDate)
+    let passedDays = getBusinessDatesCount(new Date('2021-12-13'), startDate)
+    let percentage = (passedDays/417*100).toFixed(2)
+    let service = holidaysService()
+    bot.sendMessage('925304597', '▞▔▔▔▔▔▔▔▔▔▔▔▔▔▚\n' + date + monthFormat + '. День ' + passedDays + ' ( ' + percentage + '% )\n▚▁▁▁▁▁▁▁▁▁▁▁▁▁▞\n\n≫Основное\nОсталось дней: ' + normalDays + '\nИз них рабочих: ' + buisnessdays + '\n\n≫Праздники и отпуск\nСледующее событие: ' + service[1][service[2]] + ' (' + service[0][service[2]] + ')\nОсталось дней:' + daysToHolidays[0] + '\nИз них рабочих: ' + daysToHolidays[1]);
+}
+
+  }, 5000);

@@ -2,18 +2,15 @@ const TelegramBot = require('node-telegram-bot-api');
 const { format } = require('path');
 const { start } = require('repl');
 
-const token = ''
+const token = '5468851871:AAHTmWbryFXtMogAIqecx2znizfRBNQOztM'
 
 const bot = new TelegramBot(token, { polling: true })
 
 
 console.log('READY')
-let holidays = ['2022-07-11'];
+let holidays = ['2022-03-09'];
 let holidaysCount = 0
-    let startDate = new Date();
-    console.log(startDate)
-    let endDate = new Date('07/13/2022');
-    let numOfDates = getBusinessDatesCount(startDate, endDate);
+
     
 
 
@@ -23,7 +20,7 @@ function getBusinessDatesCount(startDate, endDate) {
     while (curDate <= endDate) {
         const dayOfWeek = curDate.getDay();
         let formattedDate = curDate.toISOString().slice(0,10)
-        console.log(formattedDate)
+        // console.log(formattedDate)
         // console.log()
         if (holidays.includes(formattedDate))
         {
@@ -39,10 +36,24 @@ function getBusinessDatesCount(startDate, endDate) {
 }
 
 
-bot.onText(/\/echo (.+)/, (msg, match) => {
+function getDatesCount(startDate, endDate)
+{
+	let difference = endDate.getTime() - startDate.getTime();
+	let days = Math.ceil(difference / (1000 * 3600 * 24));
+	console.log(days + ' обычных дней');
+	return days;
+}
 
-	const chatId = msg.chat.id
-	const resp = match[1]
-	bot.sendMessage(chatId, resp)
-})
+function getDatesBeforeHolidays(startDate)
+{
+	return holidays[0] < startDate
+}
 
+
+bot.on('message', function (msg) {
+    var chatId = msg.chat.id; // Берем ID чата (не отправителя)
+	let startDate = new Date();
+    console.log(startDate)
+    let endDate = new Date('09/13/2023');
+    bot.sendMessage(chatId, getBusinessDatesCount(startDate, endDate) + ' = ' + getDatesCount(startDate, endDate) + '-=' + getDatesBeforeHolidays(startDate));
+});

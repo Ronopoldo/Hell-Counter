@@ -3,7 +3,13 @@ const { format } = require('path');
 const { start } = require('repl');
 const fs = require('fs');
 const { includes } = require('lodash');
-
+const express = require('express');
+const app = express();
+const port = 3000;
+ 
+ 
+app.get('/', function(request, response){ response.send(`Монитор активен. Локальный адрес: http://localhost:${port}`); });
+app.listen(port, () => console.log());
 const token = '5468851871:AAHTmWbryFXtMogAIqecx2znizfRBNQOztM'
 
 const bot = new TelegramBot(token, { polling: true })
@@ -113,16 +119,17 @@ bot.on('message', function (msg) {
     var chatId = msg.chat.id; // Берем ID чата (не отправителя)
 	let startDate = new Date();
     console.log(startDate)
-    let endDate = new Date('09/13/2023');
+    let endDate = new Date('05/24/2023');
     bot.sendMessage('925304597', getBusinessDatesCount(startDate, endDate) + ' = ' + getDatesCount(startDate, endDate) + '-=' + getDatesBeforeHolidays(startDate));
 });
 
 setInterval(function(){
 	let startDate = new Date();
     console.log(startDate)
-    let endDate = new Date('09/13/2023');
+    let endDate = new Date('05/24/2023');
     let formattedDate2 = startDate.toISOString().slice(0,10)
-    if ((startDate.getHours() == 0) && (startDate.getDay() !== 6)  && (startDate.getDay() !== 0) && (holidaysService()[0].includes(formattedDate2) == false)) // && (startDate.getMinutes() == 0)
+  ////////////////
+    if ((startDate.getHours() == 17) && (startDate.getDay() !== 6)  && (startDate.getDay() !== 0) && (holidaysService()[0].includes(formattedDate2) == false)) // && (startDate.getMinutes() == 0)
     {
         console.log('E')
         let month = startDate.getMonth()
@@ -180,10 +187,26 @@ setInterval(function(){
     let normalDays =  getDatesCount(startDate, endDate) 
     let buisnessdays = getBusinessDatesCount(startDate, endDate)
     let daysToHolidays =  getDatesBeforeHolidays(startDate)
-    let passedDays = getBusinessDatesCount(new Date('2021-12-13'), startDate)
-    let percentage = (passedDays/417*100).toFixed(2)
+    let passedDays = getBusinessDatesCount(new Date('2022-09-01'), startDate)
+    let percentage = (passedDays/166*100).toFixed(2)
     let service = holidaysService()
-    bot.sendMessage('925304597', date + monthFormat + ' - ' + weekFormat + '. День ' + passedDays + ' ( ' + percentage + '% )\n\n≫Основное\nОсталось дней: ' + normalDays + '\nИз них рабочих: ' + buisnessdays + '\nС учётом доп. работы:' + (getAfterworks()+buisnessdays) + '\n\n≫Праздники и отпуск\nСледующее событие: ' + service[1][service[2]] + ' (' + service[0][service[2]] + ')\nОсталось дней:' + daysToHolidays[0] + '\nИз них рабочих: ' + daysToHolidays[1]);
+
+console.log('SERVICEEEE\n' + service)
+
+      i = 0
+
+      while (startDate > new Date(service[0][i]))
+        {
+          i++
+        }
+console.log('I AMOUNT: ' + i)
+
+      
+    bot.sendMessage('925304597', '<u><b>' + date + monthFormat + ' - ' + weekFormat + '. День ' + passedDays + '</b></u> (<i>' + percentage + '%)</i>\n\n<b>≫Основное</b>\nОсталось дней: <code>' + normalDays + '</code>\nИз них рабочих: <code>' + buisnessdays + '</code>\n\n\n<b>≫Праздники и каникулы</b>\nСледующее событие: <code>' + service[1][i] + ' (' + service[0][i] + ')</code>\nОсталось дней: <code>' + daysToHolidays[0] + '</code>\nИз них рабочих: <code>' + daysToHolidays[1] + '</code>', { parse_mode: 'HTML' });
+
+
+// [holidays, reasons, holidaysCount]
+      // bot.sendMessage('678007842', date + monthFormat + ' - ' + weekFormat + '. День ' + passedDays + ' ( ' + percentage + '% )\n\n≫Основное\nОсталось дней: ' + normalDays + '\nИз них рабочих: ' + buisnessdays + '\nС учётом доп. работы:' + (getAfterworks()+buisnessdays) + '\n\n≫Праздники и отпуск\nСледующее событие: ' + service[1][service[2]] + ' (' + service[0][service[2]] + ')\nОсталось дней:' + daysToHolidays[0] + '\nИз них рабочих: ' + daysToHolidays[1]);
 }
 
-  }, 5000);
+  }, 3600000);
